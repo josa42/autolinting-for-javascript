@@ -11,7 +11,7 @@ import * as path from 'path';
 import { LINTERS, LinterConfig } from './linter-configs';
 
 export function activate(context: ExtensionContext) {
-    let disposable = commands.registerCommand('extension.setLinter', autosetLinters);
+    let disposable = commands.registerCommand('extension.setLinter', () => autosetLinters());
     context.subscriptions.push(disposable);
 
     autosetLinters();
@@ -47,4 +47,11 @@ function setWorkspaceSettings(activeLinters: LinterConfig[]) {
         const isActive = activeLinters.indexOf(linter) !== -1;
         config.update(linter.enableConfig, isActive, false);
     });
+
+    if (activeLinters.length === 0) {
+        const defaultLinters = config.get<string[]>('jsAutolint.defaultLinters');
+        defaultLinters.forEach((linter) => {
+            config.update(`${linter}.enable`, true, false);
+        });
+    }
 }

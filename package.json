@@ -1,26 +1,51 @@
 {
     "name": "autolinting-for-javascript",
     "displayName": "Autolinting for Javascript",
-    "description": "Automatically activate the correct Javascript linter for your workspace",
+    "description": "Automatically activate the correct Javascript linter for your workspace. Currently supports ESLint, JSHint and JSCS",
+    "icon": "icon.png",
     "version": "0.0.1",
     "publisher": "t-sauer",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/t-sauer/autolinting-for-javascript"
+    },
+    "bugs": {
+		"url": "https://github.com/t-sauer/autolinting-for-javascript/issues",
+		"email": "t-sauer@outlook.de"
+	},
+    "license": "MIT",
     "engines": {
-        "vscode": "^1.5.0"
+        "vscode": "^1.7.0"
     },
     "categories": [
-        "Other"
+        "Languages",
+        "Linters"
     ],
     "activationEvents": [
-        "workspaceContains:.jshintrc",
+        "onCommand:extension.setLinter",
+        "onLanguage:javascript",
         "workspaceContains:.eslintrc",
-        "workspaceContains:.jscsrc"
+        "workspaceContains:.jscsrc",
+        "workspaceContains:.jshintrc"
     ],
     "main": "./out/src/extension",
     "contributes": {
         "commands": [{
             "command": "extension.setLinter",
-            "title": "Autoactivate Javascript linter"
-        }]
+            "title": "Automatically set correct Javascript linters"
+        }],
+
+        "configuration": {
+            "type": "object",
+            "title": "Configuration for Javascript autolinting.",
+            "properties": {
+                "jsAutolint.defaultLinters": {
+                    "type": "array",
+                    "default": [],
+                    "description": "Set default linters to be used when no configuration file can be found in the current workspace."
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
@@ -33,10 +58,5 @@
         "mocha": "^2.3.3",
         "@types/node": "^6.0.40",
         "@types/mocha": "^2.2.32"
-    },
-    "extensionDependencies": [
-        "dbaeumer.vscode-eslint",
-        "ms-vscode.jscs",
-        "dbaeumer.jshint"
-    ]
+    }
 }

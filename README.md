@@ -12,7 +12,7 @@ eslint/jscs/jshint
 
 If you want to set a default linter (in case no configuration can be found), you can add a setting to your configuration.
 
-* `jsAutolint.default`: Set to an Array containing all linters you want to activate if no known linter configuration can be found. (e.g. `["jshint", "jscs"]` or `["eslint"]`)
+* `jsAutolint.defaultLinters`: Set to an Array containing all linters you want to activate if no known linter configuration can be found. (e.g. `["jshint", "jscs"]` or `["eslint"]`)
 
 ## Known Issues
 
