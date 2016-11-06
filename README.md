@@ -1,5 +1,7 @@
 # Autolinting for Javascript in VSCode
 
+[![Build Status](https://travis-ci.org/t-sauer/autolinting-for-javascript.svg?branch=master)](https://travis-ci.org/t-sauer/autolinting-for-javascript)
+
 ## Features
 
 Automatically activates/deactivates the correct linters in Visual Studio Code for your current Javascript workspace depending on which configuration files can be found.  
