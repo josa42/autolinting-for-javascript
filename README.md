@@ -36,6 +36,10 @@ The default linters will be set if you either open a Javascript file while a fol
 
 ## Release Notes
 
+### 1.1.0
+
+All possible ESLint, JSHint and JSCS configurations should work now (until now only `.eslintrc`, `.jscsrc` and `.eslintrc` were recognized).
+
 ### 1.0.0
 
 Initial release
