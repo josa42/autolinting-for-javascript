@@ -31,9 +31,11 @@ export const LINTERS: LinterConfig[] = [
     {
         name: 'JSCS',
         configFiles: [
-            '.jscsrc'
+            '.jscsrc',
+            '.jscs.json'
         ],
         extension: 'jscs',
-        enableConfig: 'jscs.enable'
+        enableConfig: 'jscs.enable',
+        packageJSONConfig: 'jscsConfig'
     }
 ];
