@@ -26,7 +26,8 @@ export const LINTERS: LinterConfig[] = [
             '.jshintrc'
         ],
         extension: 'jshint',
-        enableConfig: 'jshint.enable'
+        enableConfig: 'jshint.enable',
+        packageJSONConfig: 'jshintConfig'
     },
     {
         name: 'JSCS',
