@@ -8,7 +8,10 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { LINTERS, LinterConfig } from './linter-configs';
+import {
+    LinterConfig,
+    LINTERS,
+} from './linter-configs';
 
 export function activate(context: ExtensionContext) {
     let disposable = commands.registerCommand('extension.setLinter', () => autosetLinters());
@@ -28,17 +31,44 @@ function autosetLinters() {
         return;
     }
 
-    const lintersInProject = findLintersInProject();
+    let lintersInProject = [
+        ...findLintersInWorkspace(),
+        ...findLintersInPackageJSON()
+    ];
+
+    // Get rid of duplicate entries
+    lintersInProject = [...new Set(lintersInProject)];
+
     setWorkspaceSettings(lintersInProject);
 }
 
-function findLintersInProject(): LinterConfig[] {
+function findLintersInWorkspace(): LinterConfig[] {
     const { rootPath } = workspace;
 
     return LINTERS.filter((linter) => {
-        const configPath = path.join(rootPath, linter.configFile);
-        return fs.existsSync(configPath);
+        return linter.configFiles.some((file) => {
+            const configPath = path.join(rootPath, file);
+            return fs.existsSync(configPath);
+        });
     });
+}
+
+function findLintersInPackageJSON(): LinterConfig[] {
+    const { rootPath } = workspace;
+    const packageJSONPath = path.join(rootPath, 'package.json');
+
+    if (fs.existsSync(packageJSONPath)) {
+        let packageContent = {};
+        try {
+            packageContent = JSON.parse(fs.readFileSync(packageJSONPath, 'utf8'));
+        } catch (e) {}
+
+        return LINTERS.filter((linter) => {
+            return typeof packageContent[linter.packageJSONConfig] === 'object';
+        });
+    }
+
+    return [];
 }
 
 function setWorkspaceSettings(activeLinters: LinterConfig[]) {
