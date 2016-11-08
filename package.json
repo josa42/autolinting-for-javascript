@@ -46,6 +46,11 @@
                     "type": "array",
                     "default": [],
                     "description": "Set default linters to be used when no configuration file can be found in the current workspace."
+                },
+                "jsAutolint.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Turns of the automatically setting of linters."
                 }
             }
         }

@@ -17,6 +17,11 @@ export function activate(context: ExtensionContext) {
     let disposable = commands.registerCommand('extension.setLinter', () => autosetLinters());
     context.subscriptions.push(disposable);
 
+    const isEnabled = <boolean>workspace.getConfiguration().get('jsAutolint.enable');
+
+    if (isEnabled === false) {
+        return;
+    }
     autosetLinters();
 }
 
