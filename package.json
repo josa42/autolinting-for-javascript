@@ -27,8 +27,14 @@
     "activationEvents": [
         "onCommand:extension.setLinter",
         "onLanguage:javascript",
+        "workspaceContains:package.json",
         "workspaceContains:.eslintrc",
+        "workspaceContains:.eslintrc.js",
+        "workspaceContains:.eslintrc.yaml",
+        "workspaceContains:.eslintrc.yml",
+        "workspaceContains:.eslintrc.json",
         "workspaceContains:.jscsrc",
+        "workspaceContains:.jscs.json",
         "workspaceContains:.jshintrc"
     ],
     "main": "./out/src/extension",
