@@ -24,7 +24,7 @@ export function activate(context: ExtensionContext) {
 export function deactivate() {
 }
 
-function updateConfigIfChanged(section, value) {
+function updateConfigIfChanged(section: string, value: any) {
     const config = workspace.getConfiguration();
 
     if (config.get(section) !== value) {
@@ -106,7 +106,7 @@ class AutoLinter {
             } catch (e) {}
 
             return LINTERS.filter((linter) => {
-                return typeof packageContent[linter.packageJSONConfig] === 'object';
+                return typeof (<any>packageContent)[linter.packageJSONConfig] === 'object';
             });
         }
 
