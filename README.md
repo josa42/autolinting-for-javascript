@@ -40,6 +40,10 @@ The default linters will be set if you either open a Javascript file while a fol
 
 * `jsAutolint.enable`: If set to `false` the extension won't automatically set the linters. This is useful in certain project settings if you want to handle the configuration yourself. The command to automatically set linters is still available if you want to run it manually.
 
+### Status information
+
+* `jsAutolint.showStatus`: If set to `false` current active linters won't be displayed in the status bar.
+
 ## Release Notes
 
 ### 1.1.0
