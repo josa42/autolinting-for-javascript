@@ -45,7 +45,6 @@
         }],
 
         "configuration": {
-            "type": "object",
             "title": "Configuration for Javascript autolinting.",
             "properties": {
                 "jsAutolint.defaultLinters": {
@@ -57,6 +56,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Turns of the automatically setting of linters."
+                },
+                "jsAutolint.showStatus": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show active linters in the status bar."
                 }
             }
         }

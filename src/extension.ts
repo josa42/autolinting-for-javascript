@@ -1,9 +1,12 @@
 import {
     commands,
     ExtensionContext,
+    StatusBarItem,
+    StatusBarAlignment,
     window,
     workspace
 } from 'vscode';
+import * as vscode from 'vscode';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -14,79 +17,121 @@ import {
 } from './linter-configs';
 
 export function activate(context: ExtensionContext) {
-    let disposable = commands.registerCommand('extension.setLinter', () => autosetLinters());
+    const autoLinter = new AutoLinter();
+    let disposable = commands.registerCommand('extension.setLinter', () => autoLinter.autosetLinters());
     context.subscriptions.push(disposable);
-
-    const isEnabled = <boolean>workspace.getConfiguration().get('jsAutolint.enable');
-
-    if (isEnabled === false) {
-        return;
-    }
-    autosetLinters();
 }
 
 export function deactivate() {
 }
 
+class AutoLinter {
 
-function autosetLinters() {
-    const { rootPath } = workspace;
+    isEnabled: boolean;
 
-    if (!rootPath) {
-        return;
+    statusBarItem: StatusBarItem;
+
+    constructor() {
+        this.isEnabled = <boolean>workspace.getConfiguration().get('jsAutolint.enable');
+
+        if (this.isEnabled) {
+            this.autosetLinters();
+        }
+
+        workspace.onDidChangeConfiguration(this.autosetLinters, this);
     }
 
-    let lintersInProject = [
-        ...findLintersInWorkspace(),
-        ...findLintersInPackageJSON()
-    ];
+    autosetLinters() {
+        // FIXME: Sometimes this is called way too often (probably triggered through configuration changes)
+        const { rootPath } = workspace;
 
-    // Get rid of duplicate entries
-    lintersInProject = [...new Set(lintersInProject)];
+        if (!rootPath) {
+            return;
+        }
 
-    setWorkspaceSettings(lintersInProject);
-}
+        let lintersInProject = [
+            ...this.findLintersInWorkspace(),
+            ...this.findLintersInPackageJSON()
+        ];
 
-function findLintersInWorkspace(): LinterConfig[] {
-    const { rootPath } = workspace;
+        // Get rid of duplicate entries
+        lintersInProject = [...new Set(lintersInProject)];
 
-    return LINTERS.filter((linter) => {
-        return linter.configFiles.some((file) => {
-            const configPath = path.join(rootPath, file);
-            return fs.existsSync(configPath);
-        });
-    });
-}
+        this.setWorkspaceSettings(lintersInProject);
 
-function findLintersInPackageJSON(): LinterConfig[] {
-    const { rootPath } = workspace;
-    const packageJSONPath = path.join(rootPath, 'package.json');
+        const showStatus = <boolean>workspace.getConfiguration().get('jsAutolint.showStatus');
 
-    if (fs.existsSync(packageJSONPath)) {
-        let packageContent = {};
-        try {
-            packageContent = JSON.parse(fs.readFileSync(packageJSONPath, 'utf8'));
-        } catch (e) {}
+        if (showStatus) {
+            this.setStatusbarInformation(lintersInProject);
+        } else if (this.statusBarItem) {
+            this.statusBarItem.hide();
+        }
+    }
+
+    findLintersInWorkspace(): LinterConfig[] {
+        const { rootPath } = workspace;
 
         return LINTERS.filter((linter) => {
-            return typeof packageContent[linter.packageJSONConfig] === 'object';
+            return linter.configFiles.some((file) => {
+                const configPath = path.join(rootPath, file);
+                return fs.existsSync(configPath);
+            });
         });
     }
 
-    return [];
-}
+    findLintersInPackageJSON(): LinterConfig[] {
+        const { rootPath } = workspace;
+        const packageJSONPath = path.join(rootPath, 'package.json');
 
-function setWorkspaceSettings(activeLinters: LinterConfig[]) {
-    const config = workspace.getConfiguration();
-    LINTERS.forEach((linter) => {
-        const isActive = activeLinters.indexOf(linter) !== -1;
-        config.update(linter.enableConfig, isActive, false);
-    });
+        if (fs.existsSync(packageJSONPath)) {
+            let packageContent = {};
+            try {
+                packageContent = JSON.parse(fs.readFileSync(packageJSONPath, 'utf8'));
+            } catch (e) {}
 
-    if (activeLinters.length === 0) {
-        const defaultLinters = config.get<string[]>('jsAutolint.defaultLinters');
-        defaultLinters.forEach((linter) => {
-            config.update(`${linter}.enable`, true, false);
-        });
+            return LINTERS.filter((linter) => {
+                return typeof packageContent[linter.packageJSONConfig] === 'object';
+            });
+        }
+
+        return [];
+    }
+
+    setWorkspaceSettings(activeLinters: LinterConfig[]) {
+        const config = workspace.getConfiguration();
+
+        if (activeLinters.length > 0) {
+            LINTERS.forEach((linter) => {
+                const isActive = activeLinters.indexOf(linter) !== -1;
+
+                // Prevent settings changed events if the value hasn't changed
+                if (config.get(linter.enableConfig) !== isActive) {
+                    config.update(linter.enableConfig, isActive, false);
+                }
+            });
+        } else if (activeLinters.length === 0) {
+            const defaultLinters = config.get<string[]>('jsAutolint.defaultLinters');
+            defaultLinters.forEach((linter) => {
+                // Prevent settings changed events if the value hasn't changed
+                if (config.get(`${linter}.enable`) !== true) {
+                    config.update(`${linter}.enable`, true, false);
+                }
+            });
+        }
+    }
+
+    setStatusbarInformation(activeLinters: LinterConfig[]) {
+        if (activeLinters.length <= 0) {
+            return;
+        }
+
+        if (!this.statusBarItem) {
+            this.statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 100);
+        }
+
+        let activeLintersText = activeLinters.map((linter) => linter.name).join(', ');
+
+        this.statusBarItem.text = `$(info) ${activeLintersText}`;
+        this.statusBarItem.show();
     }
 }
