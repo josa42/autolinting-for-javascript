@@ -6,7 +6,6 @@ import {
     window,
     workspace
 } from 'vscode';
-import * as vscode from 'vscode';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -25,15 +24,35 @@ export function activate(context: ExtensionContext) {
 export function deactivate() {
 }
 
-class AutoLinter {
+function updateConfigIfChanged(section, value) {
+    const config = workspace.getConfiguration();
 
-    isEnabled: boolean;
+    if (config.get(section) !== value) {
+        config.update(section, value, false);
+    }
+}
+
+class AutoLinter {
 
     statusBarItem: StatusBarItem;
 
-    constructor() {
-        this.isEnabled = <boolean>workspace.getConfiguration().get('jsAutolint.enable');
+    get isEnabled(): boolean {
+        return <boolean>workspace.getConfiguration().get('jsAutolint.enable');
+    }
 
+    get showStatus(): boolean {
+        return <boolean>workspace.getConfiguration().get('jsAutolint.showStatus');
+    }
+
+    get defaultLinters(): LinterConfig[] {
+        const settings = workspace.getConfiguration().get<string[]>('jsAutolint.defaultLinters');
+
+        return settings.map((setting) => {
+            return LINTERS.find((linter) => linter.enableConfig.startsWith(setting));
+        });
+    }
+
+    constructor() {
         if (this.isEnabled) {
             this.autosetLinters();
         }
@@ -42,7 +61,6 @@ class AutoLinter {
     }
 
     autosetLinters() {
-        // FIXME: Sometimes this is called way too often (probably triggered through configuration changes)
         const { rootPath } = workspace;
 
         if (!rootPath) {
@@ -59,9 +77,7 @@ class AutoLinter {
 
         this.setWorkspaceSettings(lintersInProject);
 
-        const showStatus = <boolean>workspace.getConfiguration().get('jsAutolint.showStatus');
-
-        if (showStatus) {
+        if (this.showStatus) {
             this.setStatusbarInformation(lintersInProject);
         } else if (this.statusBarItem) {
             this.statusBarItem.hide();
@@ -98,38 +114,27 @@ class AutoLinter {
     }
 
     setWorkspaceSettings(activeLinters: LinterConfig[]) {
-        const config = workspace.getConfiguration();
+        const lintersToActivate = activeLinters.length > 0 ? activeLinters : this.defaultLinters;
 
-        if (activeLinters.length > 0) {
-            LINTERS.forEach((linter) => {
-                const isActive = activeLinters.indexOf(linter) !== -1;
-
-                // Prevent settings changed events if the value hasn't changed
-                if (config.get(linter.enableConfig) !== isActive) {
-                    config.update(linter.enableConfig, isActive, false);
-                }
-            });
-        } else if (activeLinters.length === 0) {
-            const defaultLinters = config.get<string[]>('jsAutolint.defaultLinters');
-            defaultLinters.forEach((linter) => {
-                // Prevent settings changed events if the value hasn't changed
-                if (config.get(`${linter}.enable`) !== true) {
-                    config.update(`${linter}.enable`, true, false);
-                }
-            });
-        }
+        LINTERS.forEach((linter) => {
+            const isActive = lintersToActivate.indexOf(linter) !== -1;
+            updateConfigIfChanged(linter.enableConfig, isActive);
+        });
     }
 
     setStatusbarInformation(activeLinters: LinterConfig[]) {
-        if (activeLinters.length <= 0) {
-            return;
-        }
-
         if (!this.statusBarItem) {
             this.statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 100);
         }
 
-        let activeLintersText = activeLinters.map((linter) => linter.name).join(', ');
+        const lintersToList = activeLinters.length > 0 ? activeLinters : this.defaultLinters;
+
+        if (lintersToList.length === 0) {
+            this.statusBarItem.hide();
+            return;
+        }
+
+        const activeLintersText = lintersToList.map((linter) => linter.name).join(', ');
 
         this.statusBarItem.text = `$(info) ${activeLintersText}`;
         this.statusBarItem.show();
