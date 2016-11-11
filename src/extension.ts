@@ -125,6 +125,7 @@ class AutoLinter {
     setStatusbarInformation(activeLinters: LinterConfig[]) {
         if (!this.statusBarItem) {
             this.statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 100);
+            this.statusBarItem.tooltip = 'Active linters';
         }
 
         const lintersToList = activeLinters.length > 0 ? activeLinters : this.defaultLinters;
