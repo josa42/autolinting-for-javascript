@@ -1,9 +1,9 @@
 export interface LinterConfig {
     name: string;
     configFiles: string[];
-    extension: string;
     enableConfig: string;
     packageJSONConfig?: string;
+    packageDependency?: string;
 }
 
 export const LINTERS: LinterConfig[] = [
@@ -16,7 +16,6 @@ export const LINTERS: LinterConfig[] = [
             '.eslintrc.yml',
             '.eslintrc.json'
         ],
-        extension: 'vscode-eslint',
         enableConfig: 'eslint.enable',
         packageJSONConfig: 'eslintConfig'
     },
@@ -25,7 +24,6 @@ export const LINTERS: LinterConfig[] = [
         configFiles: [
             '.jshintrc'
         ],
-        extension: 'jshint',
         enableConfig: 'jshint.enable',
         packageJSONConfig: 'jshintConfig'
     },
@@ -35,8 +33,14 @@ export const LINTERS: LinterConfig[] = [
             '.jscsrc',
             '.jscs.json'
         ],
-        extension: 'jscs',
         enableConfig: 'jscs.enable',
         packageJSONConfig: 'jscsConfig'
+    },
+    {
+        name: 'Standard',
+        configFiles: [],
+        enableConfig: 'standard.enable',
+        packageJSONConfig: 'jscsConfig',
+        packageDependency: 'standard'
     }
 ];

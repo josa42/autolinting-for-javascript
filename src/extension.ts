@@ -100,13 +100,23 @@ class AutoLinter {
         const packageJSONPath = path.join(rootPath, 'package.json');
 
         if (fs.existsSync(packageJSONPath)) {
-            let packageContent = {};
+            let packageContent = <any>{};
             try {
-                packageContent = JSON.parse(fs.readFileSync(packageJSONPath, 'utf8'));
+                packageContent = <any>JSON.parse(fs.readFileSync(packageJSONPath, 'utf8'));
             } catch (e) {}
 
             return LINTERS.filter((linter) => {
-                return typeof (<any>packageContent)[linter.packageJSONConfig] === 'object';
+                if (typeof packageContent[linter.packageJSONConfig] === 'object') {
+                    return true;
+                }
+
+                if (linter.packageDependency) {
+                    const inDevDependencies = packageContent.devDependencies && packageContent.devDependencies[linter.packageDependency];
+                    const inDependencies = packageContent.dependencies && packageContent.dependencies[linter.packageDependency];
+                    return inDevDependencies || inDependencies;
+                }
+
+                return false;
             });
         }
 

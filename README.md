@@ -12,6 +12,7 @@ Currently supported linters:
 * ESLint
 * JSHint
 * JSCS
+* Standard
 
 ## Requirements
 
@@ -21,6 +22,7 @@ You can find these extensions here:
 * [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 * [JSHint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.jshint)
 * [JSCS](https://marketplace.visualstudio.com/items?itemName=ms-vscode.jscs)
+* Standard: [JavaScript Standard Style](https://marketplace.visualstudio.com/items?itemName=chenxsan.vscode-standardjs) or [JS "Standard" Linter](https://marketplace.visualstudio.com/items?itemName=shinnn.standard) 
 
 ## Extension Settings
 
@@ -33,6 +35,7 @@ Possible Values:
   * `eslint`
   * `jscs`
   * `jshint`
+  * `standard`
 
 The default linters will be set if you either open a Javascript file while a folder is opened (if you just open single files the linters won't get set automatically) or if you run the command `Automatically set correct Javascript linters` from the command palette.
 
