@@ -1,7 +1,7 @@
 {
     "name": "autolinting-for-javascript",
     "displayName": "Autolinting for Javascript",
-    "description": "Automatically activate the correct Javascript linter for your workspace. Currently supports ESLint, JSHint and JSCS",
+    "description": "Automatically activate the correct Javascript linter for your workspace.",
     "keywords": [
         "javascript", "linter", "json"
     ],
