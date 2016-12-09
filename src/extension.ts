@@ -63,7 +63,7 @@ class AutoLinter {
     autosetLinters() {
         const { rootPath } = workspace;
 
-        if (!rootPath) {
+        if (!rootPath || !this.isEnabled) {
             return;
         }
 
