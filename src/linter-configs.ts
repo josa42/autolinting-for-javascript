@@ -42,5 +42,12 @@ export const LINTERS: LinterConfig[] = [
         enableConfig: 'standard.enable',
         packageJSONConfig: 'jscsConfig',
         packageDependency: 'standard'
+    },
+    {
+        name: 'TSLint',
+        configFiles: [
+            'tslint.json'
+        ],
+        enableConfig: 'tslint.enable'
     }
 ];

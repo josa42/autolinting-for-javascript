@@ -13,6 +13,7 @@ Currently supported linters:
 * JSHint
 * JSCS
 * Standard
+* TSLint
 
 ## Requirements
 
@@ -23,6 +24,7 @@ You can find these extensions here:
 * [JSHint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.jshint)
 * [JSCS](https://marketplace.visualstudio.com/items?itemName=ms-vscode.jscs)
 * Standard: [JavaScript Standard Style](https://marketplace.visualstudio.com/items?itemName=chenxsan.vscode-standardjs) or [JS "Standard" Linter](https://marketplace.visualstudio.com/items?itemName=shinnn.standard) 
+* [TSLint](https://marketplace.visualstudio.com/items?itemName=eg2.tslint)
 
 ## Extension Settings
 
@@ -36,6 +38,7 @@ Possible Values:
   * `jscs`
   * `jshint`
   * `standard`
+  * `tslint`
 
 The default linters will be set if you either open a Javascript file while a folder is opened (if you just open single files the linters won't get set automatically) or if you run the command `Automatically set correct Javascript linters` from the command palette.
 
@@ -48,6 +51,10 @@ The default linters will be set if you either open a Javascript file while a fol
 * `jsAutolint.showStatus`: If set to `false` current active linters won't be displayed in the status bar.
 
 ## Release Notes
+
+### 1.3.0
+
+* TSLint support added.
 
 ### 1.2.0
 

@@ -35,7 +35,8 @@
         "workspaceContains:.eslintrc.json",
         "workspaceContains:.jscsrc",
         "workspaceContains:.jscs.json",
-        "workspaceContains:.jshintrc"
+        "workspaceContains:.jshintrc",
+        "workspaceContains:tslint.json"
     ],
     "main": "./out/src/extension",
     "contributes": {
